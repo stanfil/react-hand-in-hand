@@ -5,6 +5,11 @@ let mongoose = require("mongoose");
 let uri = require('./config').uri;
 let User = require("./models/user");
 let routes = require('./routes');
+let bodyPaser = require('body-parser');
+let morgan = require('morgan');
+app.use(morgan('dev'));
+app.use(bodyPaser.urlencoded({ extended: false}));
+app.use(bodyPaser.json());
 
 mongoose.connect(uri);
 
@@ -21,9 +26,7 @@ db.once('open', function () {
     user.save();
 });
 
-app.get("/", function (req, res) {
-    res.send("Hello World");
-});
+routes(app);
 
 app.listen(port, function () {
     console.log(`running on port ${port}...`);
