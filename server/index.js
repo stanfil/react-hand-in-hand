@@ -7,10 +7,12 @@ let User = require("./models/user");
 let routes = require('./routes');
 let bodyPaser = require('body-parser');
 let morgan = require('morgan');
+let cors = require('cors');
+
 app.use(morgan('dev'));
 app.use(bodyPaser.urlencoded({ extended: false}));
 app.use(bodyPaser.json());
-
+app.use(cors());
 mongoose.connect(uri);
 
 let db = mongoose.connection;
@@ -19,11 +21,6 @@ db.on('error', function (err) {
 });
 db.once('open', function () {
     console.log('database connection success!');
-    let user = new User({
-        username: 'sss',
-        password: 'shadowalker'
-    });
-    user.save();
 });
 
 routes(app);

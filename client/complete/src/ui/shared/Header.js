@@ -2,9 +2,17 @@ import React, { Component } from 'react';
 import Radium from 'radium';
 import ActionHome from 'material-ui/svg-icons/action/home';
 import { Link } from 'react-router';
+import { connect } from 'react-redux';
+import { logout } from '../../redux/actions/authActions';
 
 class Header extends Component {
+    logout(e) {
+        e.preventDefault();
+        this.props.logout();
+    }
     render() {
+        const { isAuthenticated, currentUser } = this.props.auth;
+        console.log(this.props.auth);
         const styles = {
             header: {
                 position: 'fixed',
@@ -22,6 +30,7 @@ class Header extends Component {
                 justifyContent: 'space-between'
             },
             nav: {
+                paddingLeft: '20px',
                 color: 'white',
                 opacity: '.8',
                 fontWeight: '600',
@@ -34,17 +43,39 @@ class Header extends Component {
             }
         };
 
+        const LogoutLink = (
+            <div>
+                <span style={{color: 'rgb(255,226, 0)', paddingRight:'15px'}}>{ currentUser.name }</span>
+                <Link to={'/'} style={styles.nav} onClick={this.logout.bind(this)}>退出</Link>
+            </div>
+        );
+
+        const LoginLink = (
+            <div>
+                <Link to={'/signup'} style={styles.nav}>注册</Link>
+                <Link to={'/login'} style={styles.nav}>登录</Link>
+            </div>
+        );
+
         return (
             <header style={styles.header}>
                 <div>
                     <Link to="/" style={styles.nav} key={'1'}><ActionHome color={'#fff'} /></Link>
                 </div>
-                <div>
-                    <Link to="/login" style={styles.nav} key={'2'}>登录</Link>
-                </div>
+                { isAuthenticated ? LogoutLink : LoginLink }
             </header>
         );
     }
 }
 
-export default Radium(Header);
+Header.propTypes = {
+    auth: React.PropTypes.object.isRequired
+};
+
+function mapStateToProps(state) {
+    return {
+        auth: state.auth
+    };
+}
+
+export default connect(mapStateToProps, { logout })(Radium(Header));
